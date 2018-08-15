@@ -25,19 +25,19 @@ class Checkout
     @receipt.map { |item| item[:price] * item[:quantity] }.inject('+')
   end
 
-private
+  private
 
-  def quantity_of(item_name)
-    @receipt.select { |item| item[:name] == item_name }.map { |i| i[:quantity] }.inject('+') 
-  end
+    def quantity_of(item_name)
+      @receipt.select { |item| item[:name] == item_name }.map { |i| i[:quantity] }.inject('+') 
+    end
 
-  def already_scanned(item_name)
-    @receipt.map { |item| item[:name] }.include?(item_name)
-  end
+    def already_scanned(item_name)
+      @receipt.map { |item| item[:name] }.include?(item_name)
+    end
 
-  def item_index(item_name)
-    @receipt.index { |item| item[:name] == item_name }
-  end
+    def item_index(item_name)
+      @receipt.index { |item| item[:name] == item_name }
+    end
 end
 
 # co = Checkout.new

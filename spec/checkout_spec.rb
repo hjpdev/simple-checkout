@@ -13,17 +13,12 @@ describe Checkout do
 
   describe '#scan' do
 
-    it 'scans an item and adds it to the receipt' do
+    it 'scans an item, and adds one of it to the receipt by default' do
       subject.scan(apple)
       expect(subject.receipt).to eq [{ name: :apple, price: 2, quantity: 1 }]
     end
 
-    it 'scans one of the specified item by default' do
-      subject.scan(apple)
-      expect(subject.receipt).to eq [{ name: :apple, price: 2, quantity: 1 }]
-    end
-
-    it 'scans more than one of the same item if specified' do
+    it 'adds more than one of the item to the receipt if specified' do
       subject.scan(apple, 3)
       expect(subject.receipt).to eq [{ name: :apple, price: 2, quantity: 3 }]
     end
@@ -51,26 +46,26 @@ describe Checkout do
   end
 
   describe '#remove_item' do
-    
-    it 'allows you to remove item from the receipt, given its name' do
-      subject.scan(apple)
-      subject.scan(apple)
-      subject.scan(orange)
-      subject.remove_item(:apple)
-      expect(subject.receipt).to eq [{ name: :apple, price: 2, quantity: 1 }, { name: :orange, price: 1.5, quantity: 1 }]
-    end
 
-    it 'allows you to remove a certain number of an item' do
-      subject.scan(apple, 3)
-      subject.scan(orange, 2)
-      subject.scan(apple, 4)
-      subject.remove_item(:apple, 5)
-      expect(subject.receipt).to eq [{ name: :apple, price: 2, quantity: 2 }, { name: :orange, price: 1.5, quantity: 2}]
-    end
+    context 'With 3 apples & 3 oranges already scanned' do
+      before(:each) do
+        subject.scan(apple, 3)
+        subject.scan(orange, 3)
+      end
 
-    it 'raises an error if you try to remove more of an item than has been scanned' do
-      subject.scan(apple, 3)
-      expect{subject.remove_item(:apple, 5)}.to raise_error('Scanned quantity is less than the quantity specified')
+      it 'allows you to remove item from the receipt, given its name' do
+        subject.remove_item(:apple)
+        expect(subject.receipt).to eq [{ name: :apple, price: 2, quantity: 2 }, { name: :orange, price: 1.5, quantity: 3 }]
+      end
+  
+      it 'allows you to remove a certain number of an item' do
+        subject.remove_item(:apple, 2)
+        expect(subject.receipt).to eq [{ name: :apple, price: 2, quantity: 1 }, { name: :orange, price: 1.5, quantity: 3}]
+      end
+  
+      it 'raises an error if you try to remove more of an item than has been scanned' do
+        expect{subject.remove_item(:apple, 5)}.to raise_error('Scanned quantity is less than the quantity specified')
+      end
     end
   end
 end
