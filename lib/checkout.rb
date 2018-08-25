@@ -32,24 +32,23 @@ class Checkout
   end
 
   private
+  def quantity_of(item_name)
+    @receipt.select { |entry| entry[:item].name == item_name }.map { |i| i[:quantity] }.inject('+') 
+  end
 
-    def quantity_of(item_name)
-      @receipt.select { |entry| entry[:item].name == item_name }.map { |i| i[:quantity] }.inject('+') 
-    end
+  def items_with_quantity
+    @receipt.map { |entry| [entry[:item].name, entry[:quantity]] }
+  end
 
-    def items_with_quantity
-      @receipt.map { |entry| [entry[:item].name, entry[:quantity]] }
-    end
+  def already_scanned?(item_name)
+    @receipt.map { |entry| entry[:item].name }.include?(item_name)
+  end
 
-    def already_scanned?(item_name)
-      @receipt.map { |entry| entry[:item].name }.include?(item_name)
-    end
+  def item_index(item_name)
+    @receipt.index { |entry| entry[:item].name == item_name }
+  end
 
-    def item_index(item_name)
-      @receipt.index { |entry| entry[:item].name == item_name }
-    end
-
-    def update_quantity(item_name, quantity)
-      @receipt[item_index(item_name)][:quantity] += quantity
-    end
+  def update_quantity(item_name, quantity)
+    @receipt[item_index(item_name)][:quantity] += quantity
+  end
 end
